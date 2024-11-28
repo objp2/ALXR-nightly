@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          repository: "korejan/ALVR"
+          repository: "objp2/ALVR"
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
@@ -43,7 +43,7 @@ jobs:
           # TODO: gather commit output_ref to post here in the body
           body: |
             Nightly release of ALXR: ${{ steps.output_ref.outputs.version_tag }}
-            Generated from commit: korejan/ALVR@${{ steps.output_ref.outputs.release_ref }}
+            Generated from commit: objp2/ALVR@${{ steps.output_ref.outputs.release_ref }}
             
             **Please note:**
             **only server builds here are compatible.**
