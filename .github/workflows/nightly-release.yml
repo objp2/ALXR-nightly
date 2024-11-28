@@ -457,25 +457,6 @@ jobs:
           asset_path: ./build/debug/alxr_client_android/alxr-client-pico-debug.apk
           asset_name: alxr-client-pico-debug.apk
           asset_content_type: application/vnd.android.package-archive
-  upload_uwp_cert:
-    runs-on: ubuntu-22.04
-    needs: [build_uwp_app_bundle_debug, build_uwp_app_bundle_release]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          repository: "objp2/ALVR"
-          ref: ${{ needs.build_uwp_app_bundle_release.outputs.release_ref }}
-      - name: Upload UWP Cert
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.build_uwp_app_bundle_release.outputs.upload_url }}
-          asset_path: ./alvr/openxr-client/alxr-client/uwp/alxr_client_TemporaryKey.pfx
-          asset_name: alxr_client_TemporaryKey.pfx
-          asset_content_type: application/octet-stream
-
   publish_release:
     runs-on: ubuntu-22.04
     needs:
@@ -487,7 +468,6 @@ jobs:
         build_alxr_linux_debug,
         build_alxr_android_release,
         build_alxr_android_debug,
-        upload_uwp_cert
       ]
     steps:
       - uses: eregon/publish-release@v1
