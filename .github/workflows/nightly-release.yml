@@ -7,6 +7,52 @@ on:
   workflow_dispatch:
 
 jobs:
+  prepare_release:
+    runs-on: windows-2022
+    outputs:
+      release_ref: ${{ steps.output_ref.outputs.release_ref }}
+      upload_url: ${{ steps.create_alxr_release.outputs.upload_url }}
+      release_id: ${{ steps.create_alxr_release.outputs.id }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: "korejan/ALVR"
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Generate tag, set release ref
+        id: output_ref
+        env:
+          RUST_BACKTRACE: 1
+        run: |
+          $out = cargo xtask bump-alxr-versions --nightly
+          echo $out
+          echo "::set-output name=version_tag::$(echo $out | sls -CaseSensitive -Pattern '^v.*$')"
+          echo "::set-output name=release_ref::$(git rev-parse HEAD)"
+
+      - name: Create ALXR Release
+        id: create_alxr_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # Release tag is taken from the gen_tag job.
+          tag_name: ${{ steps.output_ref.outputs.version_tag }}
+          release_name:  ${{ steps.output_ref.outputs.version_tag }}
+          # TODO: gather commit output_ref to post here in the body
+          body: |
+            Nightly release of ALXR: ${{ steps.output_ref.outputs.version_tag }}
+            Generated from commit: korejan/ALVR@${{ steps.output_ref.outputs.release_ref }}
+            
+            **Please note:**
+            **only server builds here are compatible.**
+            **client v0.47 and above must be used with server v18.16 and above**
+            **alxr-client.apk for any android based headset except Pico (install alxr-client-pico.apk instead)**
+            
+          draft: true
+          prerelease: false
+  
   build_alxr_linux_portable_release:
     runs-on: ubuntu-20.04
     needs: [prepare_release]
