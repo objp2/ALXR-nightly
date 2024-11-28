@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          repository: "objp2/ALVR"
+          repository: "objp2/ALXR"
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
